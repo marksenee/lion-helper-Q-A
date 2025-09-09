@@ -61,6 +61,15 @@ export const NavButton = styled.button`
     background: #ffdbbf;
     outline: none;
   }
+
+  ${(p) =>
+    p.$active &&
+    `
+    background: #ffdbbf;
+    border-color: var(--brand-500);
+    box-shadow: inset 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  `}
 `;
 
 export const HeaderBar = styled.header`
@@ -98,6 +107,7 @@ export const LionImg = styled.img`
   height: ${(p) => p.$size || 64}px;
   object-fit: contain;
   display: block;
+  cursor: pointer;
 `;
 
 export const LionFallback = styled.div`

@@ -19,9 +19,11 @@ import {
   QuickWrap,
   ChipButton,
 } from "./styles/App.styles";
+import Chat from "./pages/Chat.jsx";
 
 function App() {
   const [query, setQuery] = useState("");
+  const [view, setView] = useState("home");
   const shortcuts = useMemo(
     () => [
       { key: "출결", icon: "✔️" },
@@ -52,11 +54,17 @@ function App() {
               alt="라이언 로고"
               $size={LOGO_ICON}
               onError={() => setLogoError(true)}
+              onClick={() => setView("/")}
             />
           )}
         </Logo>
         <Nav>
-          <NavButton title="채팅">
+          <NavButton
+            title="채팅"
+            onClick={() => setView("chat")}
+            $active={view === "chat"}
+            aria-pressed={view === "chat"}
+          >
             <MdOutlineChat size={NAV_ICON} />
           </NavButton>
           <NavButton title="공지">
@@ -73,8 +81,20 @@ function App() {
       </HeaderBar> */}
 
       <Main>
-        <Hero>
-          {/* {heroError ? (
+        {view === "chat" ? (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              alignSelf: "stretch",
+              justifySelf: "stretch",
+            }}
+          >
+            <Chat />
+          </div>
+        ) : (
+          <Hero>
+            {/* {heroError ? (
             <LionFallback $size={HERO_ICON}>🦁</LionFallback>
           ) : (
             <LionImg
@@ -84,37 +104,38 @@ function App() {
               onError={() => setHeroError(true)}
             />
           )} */}
-          <Title>무엇이 궁금하세요?</Title>
+            <Title>무엇이 궁금하세요?</Title>
 
-          <SearchForm
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert(`검색: ${query}`);
-            }}
-          >
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="질문을 입력하세요"
-              aria-label="검색어"
-            />
-            <button
-              type="submit"
-              style={{ all: "unset", cursor: "pointer" }}
-              aria-label="검색"
+            <SearchForm
+              onSubmit={(e) => {
+                e.preventDefault();
+                alert(`검색: ${query}`);
+              }}
             >
-              <CiSearch className="icon" size={22} />
-            </button>
-          </SearchForm>
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="질문을 입력하세요"
+                aria-label="검색어"
+              />
+              <button
+                type="submit"
+                style={{ all: "unset", cursor: "pointer" }}
+                aria-label="검색"
+              >
+                <CiSearch className="icon" size={22} />
+              </button>
+            </SearchForm>
 
-          <QuickWrap>
-            {shortcuts.map((s) => (
-              <ChipButton key={s.key} onClick={() => setQuery(s.key)}>
-                {s.icon} {s.key}
-              </ChipButton>
-            ))}
-          </QuickWrap>
-        </Hero>
+            <QuickWrap>
+              {shortcuts.map((s) => (
+                <ChipButton key={s.key} onClick={() => setQuery(s.key)}>
+                  {s.icon} {s.key}
+                </ChipButton>
+              ))}
+            </QuickWrap>
+          </Hero>
+        )}
       </Main>
     </AppGrid>
   );
