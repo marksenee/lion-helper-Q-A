@@ -1,6 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
-import { MdOutlineChat, MdOutlineNotificationsNone } from "react-icons/md";
+import {
+  MdOutlineChat,
+  MdOutlineNotificationsNone,
+  MdChevronRight,
+} from "react-icons/md";
 import { LuFolderOpen } from "react-icons/lu";
 import {
   AppGrid,
@@ -18,22 +22,63 @@ import {
   SearchForm,
   QuickWrap,
   ChipButton,
+  FAQWrap,
+  FAQCard,
+  FAQHeader,
+  FAQItemButton,
 } from "./styles/App.styles";
 import Chat from "./pages/Chat.jsx";
+import { fetchQaQuestionsByKeyword } from "./api/chatApi";
 
 function App() {
   const [query, setQuery] = useState("");
   const [view, setView] = useState("home");
   const [initialPrompt, setInitialPrompt] = useState("");
+  const [selectedKeyword, setSelectedKeyword] = useState(null);
+  const [faqQuestions, setFaqQuestions] = useState([]);
   const shortcuts = useMemo(
     () => [
       { key: "출결", icon: "✔️" },
       { key: "훈련장려금", icon: "🪙" },
-      { key: "공결신청", icon: "📱" },
+      { key: "공결", icon: "📱" },
       { key: "교육", icon: "🎓" },
     ],
     []
   );
+  const keywordFAQs = useMemo(
+    () => ({
+      훈련장려금: [
+        "훈련장려금 수령 계좌는 어떻게 변경하나요?",
+        "훈련장려금은 언제 수령할 수 있나요?",
+        "실업급여를 받고 있는데 훈련장려금 수령이 가능한가요?",
+      ],
+      출결: ["지각과 조퇴는 어떻게 처리되나요?", "출결 기준은 무엇인가요?"],
+      공결신청: ["공결 신청 방법을 알려주세요."],
+      교육: ["교육 일정은 어디서 확인하나요?"],
+    }),
+    []
+  );
+  const faqs = useMemo(
+    () => (selectedKeyword ? faqQuestions : []),
+    [selectedKeyword, faqQuestions]
+  );
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      if (!selectedKeyword) return;
+      try {
+        const questions = await fetchQaQuestionsByKeyword(selectedKeyword);
+        if (!ignore) setFaqQuestions(questions);
+      } catch (e) {
+        if (!ignore) setFaqQuestions(keywordFAQs[selectedKeyword] || []);
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [selectedKeyword, keywordFAQs]);
   const [logoError, setLogoError] = useState(false);
   const [heroError, setHeroError] = useState(false);
   const LOGO_BOX = 60; // 로고 컨테이너 박스 크기(px)
@@ -87,6 +132,7 @@ function App() {
             style={{
               width: "100%",
               height: "100%",
+              minHeight: "0",
               alignSelf: "stretch",
               justifySelf: "stretch",
             }}
@@ -133,11 +179,62 @@ function App() {
 
             <QuickWrap>
               {shortcuts.map((s) => (
-                <ChipButton key={s.key} onClick={() => setQuery(s.key)}>
+                <ChipButton
+                  key={s.key}
+                  $active={selectedKeyword === s.key}
+                  onClick={() => setSelectedKeyword(s.key)}
+                >
                   {s.icon} {s.key}
                 </ChipButton>
               ))}
             </QuickWrap>
+
+            {faqs.length > 0 && (
+              <FAQWrap>
+                <FAQCard>
+                  <FAQHeader>
+                    <h3>{selectedKeyword} 질문</h3>
+                    <button
+                      type="button"
+                      aria-label="FAQ 닫기"
+                      onClick={() => {
+                        setSelectedKeyword(null);
+                        setFaqQuestions([]);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </FAQHeader>
+                  <div role="list">
+                    {faqs.map((q) => (
+                      <FAQItemButton
+                        key={q}
+                        role="listitem"
+                        onClick={() => {
+                          setInitialPrompt(q);
+                          setView("chat");
+                        }}
+                      >
+                        <span className="left">
+                          <span
+                            aria-hidden
+                            style={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: 999,
+                              background: "var(--text-muted)",
+                              display: "inline-block",
+                            }}
+                          />
+                          <span className="question">{q}</span>
+                        </span>
+                        <MdChevronRight size={20} className="chev" />
+                      </FAQItemButton>
+                    ))}
+                  </div>
+                </FAQCard>
+              </FAQWrap>
+            )}
           </Hero>
         )}
       </Main>

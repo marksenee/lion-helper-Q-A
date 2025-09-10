@@ -1,10 +1,12 @@
 import styled from "styled-components";
 
 export const ChatLayout = styled.div`
-  display: grid;
-  grid-template-rows: 1fr auto;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
 `;
 
 export const Messages = styled.div`
@@ -13,6 +15,9 @@ export const Messages = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
+  flex: 1 1 0;
+  overscroll-behavior: contain;
 `;
 
 export const MessagesInner = styled.div`
@@ -42,6 +47,7 @@ export const Composer = styled.form`
   padding: 12px 16px;
   border-top: 1px solid var(--border);
   background: #fff;
+  flex: 0 0 auto;
 `;
 
 export const ComposerInner = styled.div`

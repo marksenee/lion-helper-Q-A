@@ -17,6 +17,7 @@ function Chat({ initialPrompt = "" }) {
   ]);
   const [text, setText] = useState("");
   const endRef = useRef(null);
+  const messagesWrapRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const lastInitialPromptRef = useRef("");
@@ -27,7 +28,9 @@ function Chat({ initialPrompt = "" }) {
   );
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = messagesWrapRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages.length]);
 
   const sendPrompt = async (prompt) => {
@@ -84,7 +87,7 @@ function Chat({ initialPrompt = "" }) {
 
   return (
     <ChatLayout>
-      <Messages>
+      <Messages ref={messagesWrapRef}>
         <MessagesInner>
           {messages.map((m) => (
             <Bubble key={m.id} $me={m.author === "me"}>

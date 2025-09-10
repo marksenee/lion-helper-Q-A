@@ -92,6 +92,8 @@ export const Main = styled.main`
   grid-area: main;
   display: grid;
   place-items: center;
+  min-height: 0;
+  overflow: hidden;
 `;
 
 export const Hero = styled.section`
@@ -205,6 +207,15 @@ export const ChipButton = styled.button`
       transform: none;
     }
   }
+
+  ${(p) =>
+    p.$active &&
+    `
+    background: #ffdbbf;
+    border-color: var(--brand-500);
+    box-shadow: inset 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  `}
 `;
 
 export const Dot = styled.span`
@@ -212,4 +223,90 @@ export const Dot = styled.span`
   height: 6px;
   background: var(--text-muted);
   border-radius: 50%;
+`;
+
+export const FAQWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+export const FAQCard = styled.div`
+  width: 100%;
+  max-width: min(900px, 92vw);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+`;
+
+export const FAQHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+  }
+
+  button {
+    border: none;
+    background: transparent;
+    color: #565656;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  button:hover,
+  button:focus-visible {
+    background: #fff8f0;
+    outline: none;
+  }
+`;
+
+export const FAQItemButton = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 18px 20px;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .left {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .question {
+    color: #333;
+    font-size: 16px;
+  }
+
+  .chev {
+    color: #565656;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: #fff8f0;
+    outline: none;
+  }
 `;

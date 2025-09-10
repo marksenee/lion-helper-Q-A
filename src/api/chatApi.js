@@ -19,4 +19,17 @@ export async function sendChatPrompt(prompt) {
   return data;
 }
 
-export default { sendChatPrompt };
+/**
+ * Fetch QA list by keyword and return array of questions.
+ * @param {string} keyword - e.g., "훈련장려금"
+ * @returns {Promise<string[]>} Array of question strings
+ */
+export async function fetchQaQuestionsByKeyword(keyword) {
+  const params = new URLSearchParams();
+  if (keyword) params.set("keyword", keyword);
+  const { data } = await apiClient.get(`/qa-list?${params.toString()}`);
+  const list = Array.isArray(data?.qa_list) ? data.qa_list : [];
+  return list.map((item) => item?.question).filter(Boolean);
+}
+
+export default { sendChatPrompt, fetchQaQuestionsByKeyword };
