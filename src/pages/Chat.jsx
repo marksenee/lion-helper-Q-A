@@ -9,38 +9,78 @@ import {
   ComposerBar,
 } from "../styles/Chat.styles";
 import { MdArrowForward } from "react-icons/md";
+import { sendChatPrompt } from "../api/chatApi";
 
-function Chat() {
+function Chat({ initialPrompt = "" }) {
   const [messages, setMessages] = useState(() => [
     { id: 1, author: "bot", text: "안녕하세요! 무엇을 도와드릴까요?" },
   ]);
   const [text, setText] = useState("");
   const endRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const lastInitialPromptRef = useRef("");
 
-  const canSend = useMemo(() => text.trim().length > 0, [text]);
+  const canSend = useMemo(
+    () => text.trim().length > 0 && !isLoading,
+    [text, isLoading]
+  );
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!canSend) return;
-    const userMsg = { id: Date.now(), author: "me", text: text.trim() };
+  const sendPrompt = async (prompt) => {
+    const clean = (prompt || "").trim();
+    if (!clean || isLoading) return;
+    const userMsg = { id: Date.now(), author: "me", text: clean };
     setMessages((prev) => [...prev, userMsg]);
     setText("");
-    // 간단한 봇 응답 (예시)
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          author: "bot",
-          text: "좋은 질문이에요! 곧 더 똑똑해질 예정입니다.",
-        },
-      ]);
-    }, 400);
+    setError("");
+    setIsLoading(true);
+
+    const placeholderId = Date.now() + 1;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: placeholderId,
+        author: "bot",
+        text: "AI가 응답을 생성하고 있습니다...",
+      },
+    ]);
+
+    try {
+      const data = await sendChatPrompt(clean);
+      const botText = data?.response || "응답을 가져오지 못했습니다.";
+      setMessages((prev) =>
+        prev.map((m) => (m.id === placeholderId ? { ...m, text: botText } : m))
+      );
+    } catch (err) {
+      const fallback = "오류가 발생했어요. 잠시 후 다시 시도해주세요.";
+      setMessages((prev) =>
+        prev.map((m) => (m.id === placeholderId ? { ...m, text: fallback } : m))
+      );
+      setError(
+        typeof err?.message === "string" ? err.message : "Request failed"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!canSend) return;
+    await sendPrompt(text);
+  };
+
+  useEffect(() => {
+    const fromHome = (initialPrompt || "").trim();
+    if (!fromHome) return;
+    if (lastInitialPromptRef.current === fromHome) return;
+    lastInitialPromptRef.current = fromHome;
+    sendPrompt(fromHome);
+  }, [initialPrompt]);
 
   return (
     <ChatLayout>
@@ -64,11 +104,20 @@ function Chat() {
               onChange={(e) => setText(e.target.value)}
               placeholder="메시지를 입력하세요"
               aria-label="메시지 입력"
+              disabled={isLoading}
             />
             <button type="submit" disabled={!canSend} aria-label="전송">
               <MdArrowForward size={20} />
             </button>
           </ComposerBar>
+          {error && (
+            <div
+              role="alert"
+              style={{ color: "#c00", marginTop: 8, fontSize: 14 }}
+            >
+              {error}
+            </div>
+          )}
         </ComposerInner>
       </Composer>
     </ChatLayout>

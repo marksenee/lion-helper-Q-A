@@ -118,7 +118,8 @@ export const LionFallback = styled.div`
 export const Title = styled.h1`
   padding: 5%;
   font-size: 60px;
-  font-weight: 700;
+  font-weight: 500;
+  color: #565656;
 `;
 
 export const SearchForm = styled.form`

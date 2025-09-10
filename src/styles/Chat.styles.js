@@ -21,17 +21,17 @@ export const MessagesInner = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 `;
 
 export const Bubble = styled.div`
   max-width: min(90%, 1200px);
-  height: 5vh;
+  min-height: clamp(44px, 7vh, 72px);
   width: fit-content;
-  padding: 12px 16px;
+  padding: 16px 22px;
   border-radius: 14px;
   line-height: 1.5;
-  font-size: 20px;
+  font-size: 22px;
   background: ${(p) => (p.$me ? "#ffe6d3" : "#f5f5f7")};
   color: #222;
   align-self: ${(p) => (p.$me ? "flex-end" : "flex-start")};

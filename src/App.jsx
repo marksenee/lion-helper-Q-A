@@ -24,6 +24,7 @@ import Chat from "./pages/Chat.jsx";
 function App() {
   const [query, setQuery] = useState("");
   const [view, setView] = useState("home");
+  const [initialPrompt, setInitialPrompt] = useState("");
   const shortcuts = useMemo(
     () => [
       { key: "출결", icon: "✔️" },
@@ -90,7 +91,7 @@ function App() {
               justifySelf: "stretch",
             }}
           >
-            <Chat />
+            <Chat initialPrompt={initialPrompt} />
           </div>
         ) : (
           <Hero>
@@ -109,7 +110,10 @@ function App() {
             <SearchForm
               onSubmit={(e) => {
                 e.preventDefault();
-                alert(`검색: ${query}`);
+                const clean = (query || "").trim();
+                if (!clean) return;
+                setInitialPrompt(clean);
+                setView("chat");
               }}
             >
               <input
