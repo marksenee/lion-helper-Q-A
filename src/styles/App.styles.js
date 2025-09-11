@@ -310,3 +310,34 @@ export const FAQItemButton = styled.button`
     outline: none;
   }
 `;
+
+export const LoadingWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  color: #565656;
+`;
+
+export const Spinner = styled.span`
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #ffdbbf;
+  border-top-color: var(--brand-500, #ff7a00);
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+export const EmptyWrap = styled.div`
+  padding: 20px;
+  text-align: center;
+  color: #888;
+`;

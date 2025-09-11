@@ -26,6 +26,9 @@ import {
   FAQCard,
   FAQHeader,
   FAQItemButton,
+  LoadingWrap,
+  Spinner,
+  EmptyWrap,
 } from "./styles/App.styles";
 import Chat from "./pages/Chat.jsx";
 import { fetchQaQuestionsByKeyword } from "./api/chatApi";
@@ -36,6 +39,7 @@ function App() {
   const [initialPrompt, setInitialPrompt] = useState("");
   const [selectedKeyword, setSelectedKeyword] = useState(null);
   const [faqQuestions, setFaqQuestions] = useState([]);
+  const [isFaqLoading, setIsFaqLoading] = useState(false);
   const shortcuts = useMemo(
     () => [
       { key: "출결", icon: "✔️" },
@@ -67,11 +71,15 @@ function App() {
     let ignore = false;
     const load = async () => {
       if (!selectedKeyword) return;
+      setIsFaqLoading(true);
+      setFaqQuestions([]);
       try {
         const questions = await fetchQaQuestionsByKeyword(selectedKeyword);
         if (!ignore) setFaqQuestions(questions);
       } catch (e) {
         if (!ignore) setFaqQuestions(keywordFAQs[selectedKeyword] || []);
+      } finally {
+        if (!ignore) setIsFaqLoading(false);
       }
     };
     load();
@@ -189,7 +197,7 @@ function App() {
               ))}
             </QuickWrap>
 
-            {faqs.length > 0 && (
+            {(selectedKeyword || isFaqLoading) && (
               <FAQWrap>
                 <FAQCard>
                   <FAQHeader>
@@ -200,38 +208,48 @@ function App() {
                       onClick={() => {
                         setSelectedKeyword(null);
                         setFaqQuestions([]);
+                        setIsFaqLoading(false);
                       }}
                     >
                       ×
                     </button>
                   </FAQHeader>
-                  <div role="list">
-                    {faqs.map((q) => (
-                      <FAQItemButton
-                        key={q}
-                        role="listitem"
-                        onClick={() => {
-                          setInitialPrompt(q);
-                          setView("chat");
-                        }}
-                      >
-                        <span className="left">
-                          <span
-                            aria-hidden
-                            style={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: 999,
-                              background: "var(--text-muted)",
-                              display: "inline-block",
-                            }}
-                          />
-                          <span className="question">{q}</span>
-                        </span>
-                        <MdChevronRight size={20} className="chev" />
-                      </FAQItemButton>
-                    ))}
-                  </div>
+                  {isFaqLoading ? (
+                    <LoadingWrap>
+                      <Spinner aria-hidden />
+                      <span>연관 질문 불러오는 중…</span>
+                    </LoadingWrap>
+                  ) : faqs.length === 0 ? (
+                    <EmptyWrap>관련 질문이 없어요</EmptyWrap>
+                  ) : (
+                    <div role="list">
+                      {faqs.map((q) => (
+                        <FAQItemButton
+                          key={q}
+                          role="listitem"
+                          onClick={() => {
+                            setInitialPrompt(q);
+                            setView("chat");
+                          }}
+                        >
+                          <span className="left">
+                            <span
+                              aria-hidden
+                              style={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: 999,
+                                background: "var(--text-muted)",
+                                display: "inline-block",
+                              }}
+                            />
+                            <span className="question">{q}</span>
+                          </span>
+                          <MdChevronRight size={20} className="chev" />
+                        </FAQItemButton>
+                      ))}
+                    </div>
+                  )}
                 </FAQCard>
               </FAQWrap>
             )}
