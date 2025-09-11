@@ -2,7 +2,7 @@
 
 교육생의 자주 묻는 질문을 빠르게 찾고, AI 챗봇과 대화하며 문제를 해결할 수 있도록 돕는 웹 애플리케이션입니다. 홈 화면에서 키워드(출결, 훈련장려금, 공결, 교육) 기반으로 연관 FAQ를 조회하고, 채팅 화면에서 자연어로 질문을 입력하여 답변을 받을 수 있습니다.
 
-백엔드는 Render에 배포된 API(`https://lionhelper.onrender.com`)를 사용하며, 프론트엔드는 React로 구현되어 있으며 (`https://lion-helper-qa.vercel.app/`) 확인하실 수 있습니다.
+백엔드는 Render에 배포된 API(`https://lionhelper.onrender.com`)를 사용하며, 프론트엔드는 (`https://lion-helper-qa.vercel.app/`) 확인하실 수 있습니다.
 
 ---
 
@@ -116,13 +116,3 @@ lion-helper-qa/
 - CORS 문제: API 서버의 CORS 설정을 확인해야 합니다.
 
 ---
-
-## 라이선스
-
-프로젝트 라이선스는 미정입니다. 필요 시 조직 정책에 따라 명시하세요.
-
----
-
-## 기여
-
-이슈/개선 제안은 PR 또는 Issue로 환영합니다. 코드 스타일은 프로젝트에 이미 적용된 포맷을 따르세요.
