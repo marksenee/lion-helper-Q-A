@@ -121,12 +121,12 @@ function App() {
           >
             <MdOutlineChat size={NAV_ICON} />
           </NavButton>
-          <NavButton title="공지">
+          {/* <NavButton title="공지">
             <MdOutlineNotificationsNone size={NAV_ICON} />
           </NavButton>
           <NavButton title="기록">
             <LuFolderOpen size={NAV_ICON} />
-          </NavButton>
+          </NavButton> */}
         </Nav>
       </Sidebar>
 
