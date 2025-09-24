@@ -2,10 +2,11 @@ import apiClient from "./client";
 
 // Fixed payload defaults per backend contract
 const DEFAULT_GENERATION_OPTS = {
-  max_new_tokens: 512,
-  temperature: 0.6,
+  max_new_tokens: 1000,
+  temperature: 0.7,
   top_p: 0.9,
-  use_ollama: true,
+  use_claude: true,
+  session_id: "claude-chat-001",
 };
 
 /**

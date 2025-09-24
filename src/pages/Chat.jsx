@@ -7,6 +7,11 @@ import {
   Composer,
   ComposerInner,
   ComposerBar,
+  TypingIndicator,
+  LoadingRow,
+  LionIcon,
+  LoadingText,
+  DefaultText,
 } from "../styles/Chat.styles";
 import { MdArrowForward } from "react-icons/md";
 import { sendChatPrompt } from "../api/chatApi";
@@ -26,6 +31,18 @@ function Chat({ initialPrompt = "" }) {
     () => text.trim().length > 0 && !isLoading,
     [text, isLoading]
   );
+
+  const renderBotText = (text) => {
+    if (!text || text === "__typing__") return null;
+    const sentences = text.match(/[^.]+(?:\.|$)/g) || [text];
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {sentences.map((s, idx) => (
+          <span key={idx}>{s.trim()}</span>
+        ))}
+      </div>
+    );
+  };
 
   useEffect(() => {
     const el = messagesWrapRef.current;
@@ -48,7 +65,7 @@ function Chat({ initialPrompt = "" }) {
       {
         id: placeholderId,
         author: "bot",
-        text: "AI가 응답을 생성하고 있습니다...",
+        text: "__typing__",
       },
     ]);
 
@@ -91,7 +108,33 @@ function Chat({ initialPrompt = "" }) {
         <MessagesInner>
           {messages.map((m) => (
             <Bubble key={m.id} $me={m.author === "me"}>
-              {m.text}
+              {m.author === "bot" ? (
+                m.text === "__typing__" ? (
+                  <LoadingRow>
+                    <LionIcon
+                      src="/images/lion_icon.png"
+                      alt="라이언 준비 중"
+                    />
+                    <LoadingText>
+                      <span style={{ color: "#555" }}>
+                        응답 작성 중! 조금만 기다려주세요!
+                      </span>
+                      <TypingIndicator>
+                        <span />
+                        <span />
+                        <span />
+                      </TypingIndicator>
+                    </LoadingText>
+                  </LoadingRow>
+                ) : (
+                  <LoadingRow>
+                    <LionIcon src="/images/lion_icon.png" alt="라이언" />
+                    <DefaultText> {renderBotText(m.text)}</DefaultText>
+                  </LoadingRow>
+                )
+              ) : (
+                <DefaultText>{m.text}</DefaultText>
+              )}
             </Bubble>
           ))}
           <div ref={endRef} />
